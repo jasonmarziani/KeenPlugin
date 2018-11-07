@@ -4,20 +4,11 @@ using UnityEngine;
 [RequireComponent(typeof(Helios.Keen.Client))]
 public class MetricsExample : MonoBehaviour
 {
-    Helios.Keen.Client MetricsClient;
+    private Helios.Keen.Client _keenClient;
 
     void Awake()
     {
-        // Add a metrics client as a member
-        if (MetricsClient == null)
-            MetricsClient = gameObject.AddComponent<Helios.Keen.Client>();
-    }
-
-    void OnDestroy()
-    {
-        // Remember to clean up after yourself!
-        if (MetricsClient != null)
-            Destroy(MetricsClient);
+        if (_keenClient == null) _keenClient = new Helios.Keen.Client();
     }
 
     void Start()
@@ -25,7 +16,7 @@ public class MetricsExample : MonoBehaviour
         // This line assigns project settings AND starts
         // client instance's cache service if everything is OK.
 
-        MetricsClient.Settings = new Helios.Keen.Client.Config
+        _keenClient.Settings = new Helios.Keen.Client.Config
         {
             /* [REQUIRED] Keen.IO project id, Get this from Keen dashboard */
             ProjectId           = "none",
@@ -45,31 +36,15 @@ public class MetricsExample : MonoBehaviour
     void OnKeenClientEvent(Helios.Keen.Client.CallbackData metric_event)
     {
         Debug.LogFormat("Keen event with name {0} and value {1} ended with status: {2}",
-            metric_event.evdata.Name, metric_event.evdata.Data, metric_event.status.ToString());
+            metric_event.evdata.Name, 
+            metric_event.evdata.Data, 
+            metric_event.status.ToString());
     }
 
-    void Update ()
+    void TrackEvent()
     {
-        // Let's send a bunch of metric events on mouse click...
-
-        if (!Input.GetMouseButtonDown(0))
-            return;
-
-        // This is an example of sending Helios specific events
-        MetricsClient.SendQuizEvent(new Helios.Keen.Client.QuizEvent
-        {
-            quizId = "IQ test",
-            quizResult = "failed",
-            experienceData  = new Helios.Keen.Client.ExperienceData
-            {
-                experienceLabel = "Keen Plugin",
-                versionNumber   = "1.0.0",
-                location        = "never land"
-            }
-        });
-
         // This is an example of using custom data types
-        MetricsClient.SendEvent("custom_event", new CustomData
+        _keenClient.SendEvent("custom_event", new CustomData
         {
             data_member_1 = "test string",
             data_member_2 = 25000.0f,
@@ -83,14 +58,14 @@ public class MetricsExample : MonoBehaviour
 
     class CustomData
     {
-        public string           data_member_1;
-        public float            data_member_2;
+        public string data_member_1;
+        public float data_member_2;
         public CustomNestedData data_member_3;
     }
 
     class CustomNestedData
     {
-        public string   data_member_1;
-        public double   data_member_2;
+        public string data_member_1;
+        public double data_member_2;
     }
 }

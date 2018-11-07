@@ -15,6 +15,7 @@
 # UnityVS
 /KeenPlugin/Assets/UnityVS*
 /KeenPlugin/.vs
+/KeenPlugin/.vscode
 
 # Per-project
 /KeenPlugin/ProjectSettings/ProjectVersion.txt

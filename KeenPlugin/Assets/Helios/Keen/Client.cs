@@ -6,7 +6,7 @@
     using System.Collections;
     using System.Collections.Generic;
 
-    public partial class Client : MonoBehaviour
+    public class Client
     {
         /// <summary>
         /// Used to hold write-specific Keen.IO project settings.
@@ -116,8 +116,11 @@
                 headers.Add("Authorization", config.WriteKey);
                 headers.Add("Content-Type", "application/json");
 
-                WWW www = new WWW(string.Format("https://api.keen.io/3.0/projects/{0}/events/{1}"
-                    , config.ProjectId, Name), System.Text.Encoding.ASCII.GetBytes(Data), headers);
+                WWW www = new WWW(string.Format("https://api.keen.io/3.0/projects/{0}/events/{1}", 
+                            config.ProjectId, 
+                            Name), 
+                            System.Text.Encoding.ASCII.GetBytes(Data), 
+                            headers);
 
                 return www;
             }
@@ -149,7 +152,7 @@
             get { return m_Settings; }
             set
             {
-                StopAllCoroutines();
+                CoroutineProxy.Instance.StopAllCoroutines();
                 m_Validated = false;
                 m_Caching = false;
                 m_Settings = value;
@@ -186,7 +189,7 @@
 
             if (Settings.CacheInstance != null &&
                 Settings.CacheInstance.Ready())
-                StartCoroutine(CacheRoutineCo());
+                CoroutineProxy.Instance.StartCoroutine(CacheRoutine());
 
             m_Caching = true;
         }
@@ -211,7 +214,7 @@
             else if (string.IsNullOrEmpty(event_data))
                 Debug.LogError("[Keen] event data is empty.");
             else // run if all above tests passed
-                StartCoroutine(ProcessEventData(new EventData { Name = event_name, Data = event_data }, Settings.EventCallback));
+                CoroutineProxy.Instance.StartCoroutine(ProcessEventData(new EventData { Name = event_name, Data = event_data }, Settings.EventCallback));
 
             if (!m_Caching)
                 StartCaching();
@@ -290,7 +293,7 @@
         /// Coroutine that concurrently attempts to send events to Keen.
         /// It cached event data on failure.
         /// </summary>
-        private IEnumerator ProcessEventData(EventData event_data, Action<CallbackData> callback)
+        public IEnumerator ProcessEventData(EventData event_data, Action<CallbackData> callback)
         {
             if (!m_Validated)
                 yield break;
@@ -371,7 +374,7 @@
         /// <summary>
         /// Coroutine that takes care of cached events progressively
         /// </summary>
-        private IEnumerator CacheRoutineCo()
+        public IEnumerator CacheRoutine()
         {
             yield return new WaitForSeconds(Settings.CacheSweepInterval);
 
@@ -390,7 +393,7 @@
                     yield return ProcessEventData(entry, null);
             }
 
-            yield return CacheRoutineCo();
+            yield return CacheRoutine();
         }
 
         /// <summary>
@@ -398,7 +401,7 @@
         /// </summary>
         private void OnDestroy()
         {
-            StopAllCoroutines();
+            CoroutineProxy.Instance.StopAllCoroutines();
 
             if (m_PendingTasks.Count > 0)
             {

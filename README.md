@@ -1,3 +1,7 @@
+## NOTE FROM JASON
+
+I've blown this thing up a bit, so the below is no longer accurate.
+
 # Keen IO Unity3D plugin
 
 Hi! This is the repository of Helios' Keen IO plugin. This is a write-only plugin written specifically for Unity3D with caching support (no Keen administration/read operations. solely one-way metric writing to Keen servers).
