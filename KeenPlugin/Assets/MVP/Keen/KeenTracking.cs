@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class KeenTracking : MonoBehaviour 
 {
-	public const string KEEN_PROJECT_ID = "KEEN PROJECT ID GOES HERE";
-	public const string KEEN_WRITE_KEY = "KEEN WRITE KEY GOES HERE";
-	public const string APPLICATION_TRACKING_ID = "ID FOR THIS SPECIFIC APPLICATION WITHIN THE PROJECT SENT WITH EVERY TRACKED EVENT GOES HERE";
+	public const string KEEN_PROJECT_ID = "5be08b6ec9e77c00015da478";
+	public const string KEEN_WRITE_KEY = "701C3966EA252FE19C93082231832BABE579B0525B8856005D748916EED6D3F9FECABA649E24C1D431A43AC34FBDB20229341D3B6DD972F55C183452F66F2B24450210318A43D221206189B18215B858595D427898C64D13798EAF61EC53301D";
+	public const string APPLICATION_TRACKING_ID = "Virtual Goalie";
 
 	public class TrackedEvent
 	{
@@ -49,7 +49,7 @@ public class KeenTracking : MonoBehaviour
     {
         // This line assigns project settings AND starts
         // client instance's cache service if everything is OK.
-
+		_keenClient = new Helios.Keen.Client();
         _keenClient.Settings = new Helios.Keen.Client.Config
         {
             /* [REQUIRED] Keen.IO project id, Get this from Keen dashboard */
