@@ -19,7 +19,6 @@
 
 # Per-project
 /KeenPlugin/ProjectSettings/ProjectVersion.txt
-/KeenPlugin/Assets/*
 !/KeenPlugin/Assets/Helios
 !/KeenPlugin/Assets/StreamingAssets
 !/KeenPlugin/Assets/StreamingAssets.meta
