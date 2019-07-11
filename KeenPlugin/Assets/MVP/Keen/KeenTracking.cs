@@ -5,14 +5,15 @@ using UnityEngine;
 
 public class KeenTracking : MonoBehaviour 
 {
-	public const string KEEN_PROJECT_ID = "KEEN PROJECT ID GOES HERE";
-	public const string KEEN_WRITE_KEY = "KEEN WRITE KEY GOES HERE";
-	public const string APPLICATION_TRACKING_ID = "APP ID FOR TRACKING MULTIPLE APPS WITHIN A PROJECT GOES HERE";
+	public static string KEEN_PROJECT_ID = "keenevent";
+	public static string KEEN_WRITE_KEY = "KEEN WRITE KEY GOES HERE";
+	public static string APPLICATION_TRACKING_ID = "APP ID";
 
 	public class TrackedEvent
 	{
 		// ADD ADDITIONAL TRACKABLE PARAMETERES HERE
 		public string appId = APPLICATION_TRACKING_ID;
+		public string deviceId = "";
 		public bool registered;
 		public string name;
 	}
@@ -27,13 +28,29 @@ public class KeenTracking : MonoBehaviour
 		public GameStartedEvent()
 		{
 			name = "Start";
-			// SET REGISTERED BEFORE SENDING
+		}
+	}
+
+	public class RegisteredEvent : TrackedEvent
+	{
+		public RegisteredEvent()
+		{
+			name = "Registered";
+		}
+	}
+
+	public class GameOverEvent : TrackedEvent
+	{
+		public int score;
+		
+		public GameOverEvent()
+		{
+			name = "GameOver";
 		}
 	}
 
 
 	private Helios.Keen.Client _keenClient;
-
 	private static KeenTracking _instance;
 	public static KeenTracking Instance
 	{
