@@ -14,6 +14,11 @@
         public class Config
         {
             /// <summary>
+            /// domain to send package to
+            /// </summary>
+            public string Domain;
+
+            /// <summary>
             /// can be found in https://keen.io/project/<xxx>
             /// where <xxx> is usually obtained via Keen dashboard.
             /// </summary>
@@ -116,10 +121,14 @@
                 headers.Add("Authorization", config.WriteKey);
                 headers.Add("Content-Type", "application/json");
 
+                var path = string.Format("{0}/{1}/api/{2}",
+                                    config.Domain,
+                                    config.ProjectId, 
+                                    Name);
+                Debug.Log("SEND: "+path);
+                Debug.Log("PACKAGE: "+Data);
                 WWW www = new WWW(//string.Format("https://api.keen.io/3.0/projects/{0}/events/{1}", 
-                            string.Format("https://mvp.live/{0}/api/{1}",
-                            config.ProjectId, 
-                            Name), 
+                            path, 
                             System.Text.Encoding.ASCII.GetBytes(Data), 
                             headers);
                 return www;
@@ -300,6 +309,7 @@
 
             using (WWW task_www = event_data.AsWWW(Settings))
             {
+                Debug.Log("PATH: "+task_www.url);
                 m_PendingTasks.Add(event_data);
 
                 yield return task_www;
@@ -308,6 +318,7 @@
 
                 EventStatus event_status = EventStatus.Failed;
 
+                Debug.Log(task_www.text);
                 if (!string.IsNullOrEmpty(task_www.error))
                 {
                     Debug.LogErrorFormat("[Keen] error: {0}", task_www.error);

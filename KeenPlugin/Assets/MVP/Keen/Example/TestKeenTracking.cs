@@ -26,7 +26,7 @@ public class TestKeenTracking : MonoBehaviour {
 			_analytics.TrackEvent(new KeenTracking.GameStartedEvent(){ registered = _registered });
 		}
 
-		if(Input.GetKeyDown(KeyCode.O))
+		if(Input.GetKeyDown(KeyCode.G) || Input.GetKeyDown(KeyCode.O))
 		{
 			_registered = !_registered;
 			Debug.Log("TRACK GAME OVER: "+_registered);

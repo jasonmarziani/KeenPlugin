@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class KeenTracking : MonoBehaviour 
 {
+	public static string DOMAIN = "https://ondeck.mvp.live";
 	public static string KEEN_PROJECT_ID = "keenevent";
 	public static string KEEN_WRITE_KEY = "KEEN WRITE KEY GOES HERE";
 	public static string APPLICATION_TRACKING_ID = "APP ID";
@@ -14,6 +15,7 @@ public class KeenTracking : MonoBehaviour
 		// ADD ADDITIONAL TRACKABLE PARAMETERES HERE
 		public string appId = APPLICATION_TRACKING_ID;
 		public string deviceId = "";
+		public string machine_name = "mvp";
 		public bool registered;
 		public string name;
 	}
@@ -69,6 +71,8 @@ public class KeenTracking : MonoBehaviour
 		_keenClient = new Helios.Keen.Client();
         _keenClient.Settings = new Helios.Keen.Client.Config
         {
+			/* [REQUIRED] Domain to send the package */
+			Domain 				= DOMAIN,
             /* [REQUIRED] Keen.IO project id, Get this from Keen dashboard */
             ProjectId           = KEEN_PROJECT_ID,
             /* [REQUIRED] Keen.IO write key, Get this from Keen dashboard */
@@ -95,6 +99,7 @@ public class KeenTracking : MonoBehaviour
     public void TrackEvent(TrackedEvent evt)
     {
         // This is an example of using custom data types
+		_keenClient.Settings.Domain = DOMAIN;
         _keenClient.SendEvent(evt.name, evt);
     }
 }
