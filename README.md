@@ -1,12 +1,12 @@
 ## NOTE FROM JASON
 
-I've blown this thing up a bit, so the below is no longer accurate.
 
-# Keen IO Unity3D plugin
 
-Hi! This is the repository of Helios' Keen IO plugin. This is a write-only plugin written specifically for Unity3D with caching support (no Keen administration/read operations. solely one-way metric writing to Keen servers).
+# MVP.LIVE Metrics for Unity3D
 
-Caching feature can come in handy if you are using Keen IO in situations where Internet connectivity is sparse. This library caches your calls and sends them at a later time when connection is back online and stable.
+This is the repository of MVP Interactive's MVP.LIVE Metrics Unity3D plugin. This plugin is based off of Helios Keen.io plugin, a write-only Unity3D plugin to send (and cache to send later) events to the Keen.io service.  Since Keen.io has transitioned to $$paid$$ plans, MVP Interactive has included a Keen.io-like analytics service to the MVP.LIVE platform.  This plugin will write Unity3D events to that service.
+
+Caching feature can come in handy if you are using MVP.LIVE's Metrics in situations where Internet connectivity is sparse. This library caches your calls and sends them at a later time when connection is back online and stable.
 
 ## Build notes
 
@@ -25,37 +25,49 @@ Virtually you can use this library on all platforms as long as you take care of 
 
 On iOS, you must use `Application.persistentDataPath` as your cache directory (this is one of the fewest directories write-able on iOS devices).
 
-## Sample usage
+## Usage
 
-You may begin by importing the latest stable release `.unitypackage`. There is an example scene and an example script (`MetricsExample.cs`) in this repository which shows you how to use this plugin.
+Include the Assets/Helios and Assets/MVP folders into your project.
+Add MVPMetricsTracking.cs to a GameObject in the Heirarchy.
 
-----
+MVPMetricsTracking class provides 3 shortcut methods for common game events:
+GameStartedEvent
+RegisteredEvent
+GameOverEvent
 
-Start by having an instance of `Helios.Keen.Client` which is a `MonoBehaviour`:
+These events prepopulate the event name.  Each of these events takes a "registered" boolean.  GameOverEvent takes a generic "score" integer.
+
+Each of these shortcut event classes extend from a generic TrackedEvent class.
+
+Usage:
+
+In a class wishing to track events, establish a reference to MVPMetricsTracking instance.
 
 ```C#
-var MetricsClient = gameObject.AddComponent<Helios.Keen.Client>();
+if(_analytics == null) _analytics = GetComponent<MVPMetricsTracking>();
 ```
-
-Then provide it your project's specific settings:
-
+or
 ```C#
-MetricsClient.Settings = new Helios.Keen.Client.Config
-{
-	/* [REQUIRED] Keen.IO project id, Get this from Keen dashboard */
-	ProjectId           = "none",
-	/* [REQUIRED] Keen.IO write key, Get this from Keen dashboard */
-	WriteKey            = "none",
-	/* [OPTIONAL] Attempt to sweep the cache every 45 seconds */
-	CacheSweepInterval  = 45.0f,
-	/* [OPTIONAL] In every sweep attempt pop 10 cache entries */
-	CacheSweepCount     = 10,
-	/* [OPTIONAL] This is the callback per Client's event emission */
-	EventCallback       = OnKeenClientEvent,
-	/* [OPTIONAL] If not provided, cache is turned off */
-	CacheInstance       = new Helios.Keen.Cache.Sqlite("path/to/db")
-};
+_analytics = MVPMetricsTracking.Instance;
 ```
+then,
+```C#
+_analytics.TrackEvent(new MVPMetricsTracking.GameStartedEvent(){ registered = false });
+
+_analytics.TrackEvent(new MVPMetricsTracking.GameOverEvent(){ registered = _registered, score = Mathf.CeilToInt(Random.value * 100) });
+```
+or simply
+```C#
+var eventToTrack = new MVPMetricsTracking.TrackedEvent();
+eventToTrack.name = "FaceNotRecognized";
+MVPMetricsTracking.Instance.TrackEvent(eventToTrack);
+```
+
+See TestMetricsTracking for in-context examples of how to interface with MVPMetricsTracking
+
+
+Below is Helios / Keen.io documentation for sending events.
+-----
 
 And start sending events:
 
