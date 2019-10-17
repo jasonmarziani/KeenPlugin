@@ -1,22 +1,26 @@
 ﻿using System.IO;
 using UnityEngine;
 
+/*
+THIS IS AN EXAMPLE SETUP.  FOR PRODUCTION READY CODE, SEE MVPMetricsTracking.cs.
+ */
+
+
 [RequireComponent(typeof(Helios.Keen.Client))]
 public class MetricsExample : MonoBehaviour
 {
-    private Helios.Keen.Client _keenClient;
+    private Helios.Keen.Client _mvpMetricsClient;
 
     void Awake()
     {
-        if (_keenClient == null) _keenClient = new Helios.Keen.Client();
+        if (_mvpMetricsClient == null) _mvpMetricsClient = new Helios.Keen.Client();
     }
 
     void Start()
     {
         // This line assigns project settings AND starts
         // client instance's cache service if everything is OK.
-
-        _keenClient.Settings = new Helios.Keen.Client.Config
+        _mvpMetricsClient.Settings = new Helios.Keen.Client.Config
         {
             /* [REQUIRED] Keen.IO project id, Get this from Keen dashboard */
             ProjectId           = "none",
@@ -27,13 +31,13 @@ public class MetricsExample : MonoBehaviour
             /* [OPTIONAL] In every sweep attempt pop 10 cache entries */
             CacheSweepCount     = 10,
             /* [OPTIONAL] This is the callback per Client's event emission */
-            EventCallback       = OnKeenClientEvent,
+            EventCallback       = OnMetricsEvent,
             /* [OPTIONAL] A cache implementation instance. If not provided, cache is turned off */
-            CacheInstance       = new Helios.Keen.Cache.Sqlite(Path.Combine(Application.persistentDataPath, "keen.sqlite3"))
+            CacheInstance       = new Helios.Keen.Cache.Sqlite(Path.Combine(Application.persistentDataPath, "mvpMetrics.sqlite3"))
         };
     }
 
-    void OnKeenClientEvent(Helios.Keen.Client.CallbackData metric_event)
+    void OnMetricsEvent(Helios.Keen.Client.CallbackData metric_event)
     {
         Debug.LogFormat("Keen event with name {0} and value {1} ended with status: {2}",
             metric_event.evdata.Name, 
@@ -44,7 +48,7 @@ public class MetricsExample : MonoBehaviour
     void TrackEvent()
     {
         // This is an example of using custom data types
-        _keenClient.SendEvent("custom_event", new CustomData
+        _mvpMetricsClient.SendEvent("custom_event", new CustomData
         {
             data_member_1 = "test string",
             data_member_2 = 25000.0f,

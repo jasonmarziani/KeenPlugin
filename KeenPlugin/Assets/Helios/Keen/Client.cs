@@ -84,7 +84,7 @@
                     if (value.Length > NameCharacterLimit)
                     {
                         m_Name = value.Substring(0, (int)NameCharacterLimit);
-                        Debug.LogWarning("[Keen] name will be truncated.");
+                        Debug.LogWarning("[MVP Metrics] name will be truncated.");
                     }
                     else
                     {
@@ -102,7 +102,7 @@
                     if (value.Length > DataCharacterLimit)
                     {
                         m_Data = value.Substring(0, (int)DataCharacterLimit);
-                        Debug.LogWarning("[Keen] data will be truncated.");
+                        Debug.LogWarning("[MVP Metrics] data will be truncated.");
                     }
                     else
                     {
@@ -121,16 +121,13 @@
                 headers.Add("Authorization", config.WriteKey);
                 headers.Add("Content-Type", "application/json");
 
-                var path = string.Format("{0}/{1}/api/{2}",
+                var path = string.Format("{0}/{1}/api/metric",
                                     config.Domain,
-                                    config.ProjectId, 
-                                    Name);
-                Debug.Log("SEND: "+path);
-                Debug.Log("PACKAGE: "+Data);
-                WWW www = new WWW(//string.Format("https://api.keen.io/3.0/projects/{0}/events/{1}", 
-                            path, 
+                                    config.ProjectId);
+                WWW www = new WWW(path, 
                             System.Text.Encoding.ASCII.GetBytes(Data), 
                             headers);
+                //PATH was string.Format("https://api.keen.io/3.0/projects/{0}/events/{1}", for Keen.IO integration
                 return www;
             }
 
@@ -167,7 +164,7 @@
                 m_Settings = value;
 
                 if (Settings == null)
-                    Debug.LogError("[Keen] Settings object is empty.");
+                    Debug.LogError("[MVP Metrics] Settings object is empty.");
                 else if (string.IsNullOrEmpty(Settings.ProjectId))
                     Debug.LogError("[Keen] project ID is empty.");
                 else if (string.IsNullOrEmpty(Settings.WriteKey))
@@ -186,13 +183,13 @@
         {
             if (!m_Validated)
             {
-                Debug.LogWarning("[Keen] instance is not validated.");
+                Debug.LogWarning("[MVP Metrics] instance is not validated.");
                 return;
             }
 
             if (m_Caching)
             {
-                Debug.LogWarning("[Keen] instance is already caching.");
+                Debug.LogWarning("[MVP Metrics] instance is already caching.");
                 return;
             }
 
@@ -212,16 +209,16 @@
         }
 
         /// <summary>
-        /// Sends JSON string to Keen IO
+        /// Sends JSON string to MVP Metrics IO
         /// </summary>
         public virtual void SendEvent(string event_name, string event_data)
         {
             if (!m_Validated)
-                Debug.LogError("[Keen] Client is not validated.");
+                Debug.LogError("[MVP Metrics] Client is not validated.");
             else if (string.IsNullOrEmpty(event_name))
-                Debug.LogError("[Keen] event name is empty.");
+                Debug.LogError("[MVP Metrics] event name is empty.");
             else if (string.IsNullOrEmpty(event_data))
-                Debug.LogError("[Keen] event data is empty.");
+                Debug.LogError("[MVP Metrics] event data is empty.");
             else // run if all above tests passed
                 CoroutineProxy.Instance.StartCoroutine(ProcessEventData(new EventData { Name = event_name, Data = event_data }, Settings.EventCallback));
 
@@ -318,25 +315,25 @@
 
                 EventStatus event_status = EventStatus.Failed;
 
-                Debug.Log(task_www.text);
+                Debug.Log("STATUS: "+task_www.text);
                 if (!string.IsNullOrEmpty(task_www.error))
                 {
-                    Debug.LogErrorFormat("[Keen] error: {0}", task_www.error);
+                    Debug.LogErrorFormat("[MVP Metrics] error: {0}", task_www.error);
 
                     if (CacheEventData(event_data))
                     {
-                        Debug.LogFormat("[Keen] event cached: {0}", event_data.Name);
+                        Debug.LogFormat("[MVP Metrics] event cached: {0}", event_data.Name);
                         event_status = EventStatus.Cached;
                     }
                     else
                     {
-                        Debug.LogFormat("[Keen] event failed: {0}", event_data.Name);
+                        Debug.LogFormat("[MVP Metrics] event failed: {0}", event_data.Name);
                         event_status = EventStatus.Failed;
                     }
                 }
                 else
                 {
-                    Debug.LogFormat("[Keen] event submitted: {0}", event_data.Name);
+                    Debug.LogFormat("[MVP Metrics] event submitted: {0}", event_data.Name);
                     event_status = EventStatus.Submitted;
 
                     if (Settings.CacheInstance != null &&
@@ -393,7 +390,7 @@
                 Settings.CacheInstance == null ||
                 !Settings.CacheInstance.Ready())
             {
-                Debug.LogError("[Keen] cache routine is going to die forever. Bye Bye.");
+                Debug.LogError("[MVP Metrics] cache routine is going to die forever. Bye Bye.");
                 yield break;
             }
 
@@ -416,7 +413,7 @@
 
             if (m_PendingTasks.Count > 0)
             {
-                Debug.LogWarningFormat("[Keen] you have pending events while shutting down! They will be cached.");
+                Debug.LogWarningFormat("[MVP Metrics] you have pending events while shutting down! They will be cached.");
 
                 foreach (EventData pending_task in m_PendingTasks)
                     CacheEventData(pending_task);
